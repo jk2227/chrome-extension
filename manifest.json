@@ -4,7 +4,6 @@
   "name": "Test",
   "description": "This extension shows the text that you highlighted in a text bubble",
   "version": "1.0",
-
   "browser_action": {
     "default_icon": "erik_headshot.png"
   },
@@ -12,7 +11,7 @@
     {
       "matches": ["http://*/", "https://*/", "*://*/", "<all_urls>"],
       "css": ["contentScript.css"],
-      "js": ["contentScript.js"]
+      "js": ["jquery.js", "jquery.foggy.min.js","contentScript.js"]
     }
   ],
   "permissions": [

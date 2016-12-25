@@ -1,7 +1,16 @@
 console.log("context script running")
+/*$( "p" ).foggy();*/
+$( "p" ).each(function(index) {
+  var str = $(this).text(); 
+  if (str.includes("Ji Hun")) {
+    console.log(index + ":" + $(this).text() );
+  } else {
+    $(this).foggy();
+  }
+});
 /*
 http://stackoverflow.com/questions/4409378/text-selection-and-bubble-overlay-as-chrome-extension/*
-*/
+
 
 // Add bubble to the top of the page.
 var bubbleDOM = document.createElement('div');
@@ -30,3 +39,4 @@ function renderBubble(mouseX, mouseY, selection) {
   bubbleDOM.style.left = mouseX + 'px';
   bubbleDOM.style.visibility = 'visible';
 }
+*/
