@@ -1,13 +1,30 @@
-console.log("context script running")
-/*$( "p" ).foggy();*/
-$( "p" ).each(function(index) {
-  var str = $(this).text(); 
-  if (str.includes("Ji Hun")) {
-    console.log(index + ":" + $(this).text() );
-  } else {
-    $(this).foggy();
-  }
-});
+targetText = "Ji Hun Kim"; 
+addTagToText(targetText);
+blurOutText(targetText) 
+
+function blurOutText(targetText) {
+  $( "p" ).each(function(index) {
+    var str = $(this).text();
+    if (str.includes(targetText)) {
+      $("notTargetText").foggy();
+    } else {
+      $(this).foggy();
+    }
+  });
+}
+
+function addTagToText(text) {
+  $( "p" ).each(function(index) {
+    var currentText = $(this).text();
+    if (currentText.includes(text)) {
+      console.log(currentText);
+      var newHtmlElement = currentText.replace(text, '</notTargetText><targetText>' + text + '</targetText><notTargetText>');
+      newHtmlElement = '<notTargetText>' + newHtmlElement + '</notTargetText>'
+      $(this).html(newHtmlElement);
+    }
+  }); 
+}
+
 /*
 http://stackoverflow.com/questions/4409378/text-selection-and-bubble-overlay-as-chrome-extension/*
 
