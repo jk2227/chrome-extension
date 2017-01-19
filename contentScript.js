@@ -1,6 +1,11 @@
-targetText = "Ji Hun Kim"; 
-addTagToText(targetText);
-blurOutText(targetText) 
+$(document).ready(function() {
+  // Initialize the plugin
+
+  targetText = "新潟県にいがたけん関川せきかわ村むらにある"; 
+  addTagToText(targetText);
+  blurOutText(targetText);
+  $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this sentence? </i> <br> <button type='button' class='yesButton' onclick='alert('Hello world!')''> Yes </button> <button type='button' class='noButton' onclick='alert('Hello world!')''> No </button> </span>");
+});
 
 function blurOutText(targetText) {
   $( "p" ).each(function(index) {
@@ -17,13 +22,14 @@ function addTagToText(text) {
   $( "p" ).each(function(index) {
     var currentText = $(this).text();
     if (currentText.includes(text)) {
-      console.log(currentText);
-      var newHtmlElement = currentText.replace(text, '</notTargetText><targetText>' + text + '</targetText><notTargetText>');
+      var newHtmlElement = currentText.replace(text, '</notTargetText><div id="targetText" class="targetText">' + text + '</div><notTargetText>');
       newHtmlElement = '<notTargetText>' + newHtmlElement + '</notTargetText>'
       $(this).html(newHtmlElement);
     }
   }); 
 }
+
+
 
 /*
 http://stackoverflow.com/questions/4409378/text-selection-and-bubble-overlay-as-chrome-extension/*
