@@ -1,12 +1,27 @@
+#overlay {
+    background:rgba(0,0,0,0.9);
+    display:none;
+    width:100%; height:100%;
+    position:absolute; top:0; left:0; z-index:99998;
+}
+
+#tagetText {
+    position: relative;
+    z-index: 99999; 
+}
+
 /* Popup container - can be anything you want */
 .targetText {
     position: relative;
     display: inline-block;
     cursor: pointer;
+    background-color: white;
+    /*background-color:#ff66ff;*/
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    z-index: 99999;
 }
 
 /* The actual popup */
@@ -19,7 +34,7 @@
     border-radius: 6px;
     padding: 8px 0;
     position: absolute;
-    z-index: 1;
+    z-index: 99999;
     bottom: 125%;
     left: 50%;
     margin-left: -80px;

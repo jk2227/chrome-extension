@@ -7,9 +7,12 @@
   "browser_action": {
     "default_icon": "erik_headshot.png"
   },
+  "background": {
+    "scripts": ["background.js"] 
+  },
   "content_scripts":[
     {
-      "matches": ["http://www3.nhk.or.jp/*"],
+      "matches": ["<all_urls>"], 
       "css": ["contentScript.css"],
       "js": ["jquery.js", "jquery.foggy.min.js", "contentScript.js"]
     }
