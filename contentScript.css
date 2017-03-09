@@ -1,4 +1,4 @@
-#overlay {
+.overlay {
     background:rgba(0,0,0,0.9);
     display:none;
     width:100%; height:100%;
@@ -35,7 +35,7 @@
     padding: 8px 0;
     position: absolute;
     z-index: 99999;
-    bottom: 125%;
+    bottom: 100%;
     left: 50%;
     margin-left: -80px;
 }
