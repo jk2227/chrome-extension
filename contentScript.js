@@ -105,15 +105,15 @@ function parseText(htmlString, text) {
 
 function executeScript(response) {
   $(document).ready(function() {
-    //$(document.body).append("<div class='overlay'></div>");
+    document.body.style.background = "black";
+    $(".contentWrap").css('background', 'unset');
+    // $(document.body).append("<div class='overlay'></div>");
     targetText = response["text"]; 
     addTagToText(targetText);
-    $("#newsarticle").append("<div class='overlay'></div>");
+    // $("#newsarticle").css('background', "black")
     $("#side").append("<div class='overlay'></div>");
-    //$("#main_enqdiv").append("<div class='overlay'></div>");
-    //$("#enq_bt_answer").append("<div class='overlay'></div>");
     $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this sentence? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
-    //$('popuptext').css('z-index','99999');
+    
     document.getElementById("yesButtonId").addEventListener("click", function() {
       f(true)
     }, false);
@@ -129,6 +129,7 @@ function executeScript(response) {
 }
 
 function addTagToText(text) {
+  text = text.trim();
   var i = 0;
   var indexOfText = 0; 
   var firstIndex = 0;
@@ -149,24 +150,13 @@ function addTagToText(text) {
             }
         }
         i = j + 1;
-    } else if (html.charAt(i) == ' ') { 
+    } else if (html.charAt(i) == ' ' || html.charAt(i) == '\n') { 
         i += 1 
+    } else if (text.charAt(indexOfText) == ' ') {
+        indexOfText += 1 
     } else {
         if (text.charAt(indexOfText) == html.charAt(i)) {
-          if (indexOfText == 0) {
-            openTag = i; 
-            tagName = "";
-            while (html.charAt(openTag) != '<') {
-              openTag -= 1;
-              tagName = html.charAt(openTag) + tagName;
-            }
-            console.log(tagName);
-            firstIndex = openTag; 
-          }
           indexOfText += 1
-          if (indexOfText == text.length) {
-            lastIndex = i + 1;
-          }
         } else {
           indexOfText = 0; 
         }
@@ -174,10 +164,7 @@ function addTagToText(text) {
     }
   }
 
-  console.log(html);
-
-  console.log(firstIndex);
-  console.log(lastIndex);
+  lastIndex = i;
   var newHtml = html.substring(0, firstIndex) 
   newHtml += '<div id="targetText" class="targetText">';
   newHtml += html.substring(firstIndex, lastIndex);
