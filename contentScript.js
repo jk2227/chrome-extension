@@ -112,7 +112,6 @@ function executeScript(response) {
     $("#side").append("<div class='overlay'></div>");
     //$("#main_enqdiv").append("<div class='overlay'></div>");
     //$("#enq_bt_answer").append("<div class='overlay'></div>");
-    //blurOutText(targetText);
     $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this sentence? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
     //$('popuptext').css('z-index','99999');
     document.getElementById("yesButtonId").addEventListener("click", function() {
@@ -126,17 +125,6 @@ function executeScript(response) {
     $('html,body').animate({
         scrollTop: $("#myPopup").offset().top},
         'slow');
-  });
-}
-
-function blurOutText(targetText) {
-  $( "*" ).each(function(index) {
-    var str = $(this).text();
-    if (str.includes(targetText)) {
-      $("notTargetText").foggy();
-    } else {
-      $(this).foggy();
-    }
   });
 }
 
