@@ -141,46 +141,61 @@ function blurOutText(targetText) {
 }
 
 function addTagToText(text) {
-  console.log(text)
-  found = false;
-  $( "#newsarticle p" ).each(function(index) {
-    var currentText = $(this).text();
-    var currentHTML = $(this).html();
-    if (currentText != null && currentHTML != null && currentText.length > 0 && currentHTML.length > 0) { 
-      var parsedText = parseText(currentHTML, currentText); 
-      if (parsedText.includes(text)) {
-        console.log("Parsed text");
-        console.log(parsedText);
-        console.log("Current HTML");
-        console.log(currentHTML);
-        var newHtmlElement = parsedText.replace(text, '</notTargetText><span id="targetText" class="targetText"><b><u>' + currentHTML + '</u></b></span><notTargetText>');
-        newHtmlElement = '<notTargetText>' + newHtmlElement + '</notTargetText>';
-        console.log("new html element");
-        console.log(newHtmlElement);
-        $(this).html(newHtmlElement);
-        found = true;
-      }
+  var i = 0;
+  var indexOfText = 0; 
+  var firstIndex = 0;
+  var lastIndex = 0;
+  html = $("#newsarticle").html();
+  while ( i < html.length && indexOfText < text.length) {
+    if (html.charAt(i) == '<') {
+        j = i +1;
+        tagName = "";
+        while (html.charAt(j) != '>') {
+            tagName += html.charAt(j);
+            j += 1
+        }
+        if (tagName == "rt") {
+            j += 1
+            while (html.charAt(j) != '>') {
+                j += 1
+            }
+        }
+        i = j + 1;
+    } else if (html.charAt(i) == ' ') { 
+        i += 1 
+    } else {
+        if (text.charAt(indexOfText) == html.charAt(i)) {
+          if (indexOfText == 0) {
+            openTag = i; 
+            tagName = "";
+            while (html.charAt(openTag) != '<') {
+              openTag -= 1;
+              tagName = html.charAt(openTag) + tagName;
+            }
+            console.log(tagName);
+            firstIndex = openTag; 
+          }
+          indexOfText += 1
+          if (indexOfText == text.length) {
+            lastIndex = i + 1;
+          }
+        } else {
+          indexOfText = 0; 
+        }
+        i += 1 
     }
-  });
-
-  if (!found) {
-    $("#newsarticle").empty()
-    $("#newsarticle").append('<p></p>')
-    $("#newsarticle p").html('<span id="targetText" class="targetText"><b><u>' + text + '</u></b></span>');
   }
-/*
-  newsarticleHtml = $("#newsarticle").html();
-  newsarticleText = $("#newsarticle").text(); 
-  newsarticleNoFurigana = parseText(newsarticleHtml, newsarticleText).split('\n').filter(function(x) { 
-    return x.length > 0 }).join(" "); 
-  console.log("NEWS ARTICLE NO FURIGANA");
-  console.log(newsarticleNoFurigana);
-  console.log(newsarticleNoFurigana.includes(text));
-  if (newsarticleNoFurigana.includes(text)) {
-    var newHtmlElement = newsarticleNoFurigana.replace(text, '</notTargetText><span id="targetText" class="targetText"><b><u>' + text + '</u></b></span><notTargetText>');
-    newHtmlElement = '<notTargetText>' + newHtmlElement + '</notTargetText>';
-    $(this).html(newHtmlElement);
-  } */
+
+  console.log(html);
+
+  console.log(firstIndex);
+  console.log(lastIndex);
+  var newHtml = html.substring(0, firstIndex) 
+  newHtml += '<div id="targetText" class="targetText">';
+  newHtml += html.substring(firstIndex, lastIndex);
+  newHtml +=  '</div>'
+  newHtml += html.substring(lastIndex);
+  $("#newsarticle").html(newHtml);
 }
 
 function setCookie(cname,cvalue,exdays) {
