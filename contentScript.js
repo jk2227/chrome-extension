@@ -72,36 +72,7 @@ function getText() {
   xhr.send();
   var text = xhr.responseText; 
   return {"text": text};
-
-  // call on backend using docId to get the text
-  // var xhr = new XMLHttpRequest();
-  // xhr.open("GET", "http://www.domain.com?par=0", false);
-  // xhr.send();
-  // var result = xhr.responseText; 
-  //return { "text": "新潟県関川村にある農場で２８日、ニワトリがたくさん死んでいるのが見つかりました。新潟県が調べると、死んだニワトリから鳥のインフルエンザのＨ５型のウイルスが見つかりました。" };  
 }
-
-function parseText(htmlString, text) {
-  var re = /<rt>(.*?)<\/rt>/g
-  var matchedToRegex = htmlString.match(re);
-  var furiganas = matchedToRegex.map(function(x) { 
-    var i = x.indexOf('>'); 
-    var j = x.indexOf("</"); 
-    return x.substring(i+1, j); 
-  });
-  var textNoFurigana = "";
-  var furiganaIndex = 0;  
-  while (furiganaIndex < furiganas.length) {
-    var furigana = furiganas[furiganaIndex];
-    var endIndex = text.indexOf(furigana); 
-    textNoFurigana += text.substring(0, endIndex);
-    text = text.substring(endIndex + furigana.length); 
-    furiganaIndex += 1 
-  } 
-  textNoFurigana += text; 
-
-  return textNoFurigana;
-} 
 
 function executeScript(response) {
   $(document).ready(function() {
