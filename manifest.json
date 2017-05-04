@@ -1,11 +1,16 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 1,
 
-  "name": "Test",
-  "description": "This extension is part of a language learning tool",
+  "name": "Language Learning Tool Chrome Extension",
+  "description": "This extension is part of a language learning tool for a project that Professor Erik Andersen and Ph.D. candidate Shuhan Wang is working on.",
   "version": "1.0",
   "browser_action": {
     "default_icon": "erik_headshot.png"
+  },
+  "icons": { 
+    "16": "images/eland_16.jpg",
+    "48": "images/eland_48.jpg",
+    "128": "images/eland_128.jpg" 
   },
   "background": {
     "scripts": ["background.js"] 
