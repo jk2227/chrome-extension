@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Language Learning Tool Chrome Extension",
-  "description": "This extension is part of a language learning tool for a project that Professor Erik Andersen and Ph.D. candidate Shuhan Wang is working on.",
+  "description": "Extension for a project Prof. Erik Andersen and Ph.D. candidate Shuhan Wang.",
   "version": "1.0",
   "browser_action": {
     "default_icon": "images/erik_headshot.png"
