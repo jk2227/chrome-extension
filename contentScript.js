@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 });
 
 // public IP for backend in EC2 
-var EBURL = "http://107.23.217.246:5000"
+var EBURL = "http://ec2-54-89-85-115.compute-1.amazonaws.com:5000"
 
 // if we are on a URL that contains http://www3.nhk.or.jp/ and... 
 // (1) we have just started and on http://www3.nhk.or.jp/news/easy/ 
@@ -143,6 +143,7 @@ function executeScript(response) {
 // we open the div targetText in the first index and 
 // close the div in the last index 
 function addTagToText(text) {
+  console.log(text);
   text = text.trim();
   var i = 0;
   var indexOfText = 0; 
