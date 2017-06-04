@@ -75,7 +75,6 @@ function getCurrentDocId() {
   if (currentUrl[currentUrl.length - 2] == 'easy') {
     return "easy";
   } else {
-    console.log(getCookie("nextDocId"))
     return getCookie("nextDocId");
   }
 }
@@ -98,6 +97,8 @@ function getText() {
   var docId = getCurrentDocId(); 
 
   var xhr = new XMLHttpRequest();
+  console.log("doc id");
+  console.log(docId);
   xhr.open("GET", EBURL + "/text/"+ docId +"/", false);
   xhr.send();
   var text = xhr.responseText; 
