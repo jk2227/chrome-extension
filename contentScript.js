@@ -63,7 +63,8 @@ function submitAnswerAndGetNext(userResponse) {
   xhr.open("GET", EBURL + "/doc_id/" + getCookie("elanduid2") + "/", false);
   xhr.send();
   var nextDocId = xhr.responseText; 
-  navigate(nextDocId)
+  setCookie("nextDocId", nextDocId, 60)
+  navigate(nextDocId.slice(0, 15))
 }
 
 // gets the id of the current document of interest
@@ -71,7 +72,12 @@ function submitAnswerAndGetNext(userResponse) {
 // then this method will return 'easy'
 function getCurrentDocId() {
   var currentUrl = window.location.href.split('/')
-  return currentUrl[currentUrl.length - 2]
+  if (currentUrl[currentUrl.length - 2] == 'easy') {
+    return "easy";
+  } else {
+    console.log(getCookie("nextDocId"))
+    return getCookie("nextDocId");
+  }
 }
 // calls backend to get the id of the URL 
 // ignore k10010718561000 for now? 
@@ -82,7 +88,8 @@ function getId() {
   xhr.open("GET", EBURL + "/doc_id/" + userId + "/", false);
   xhr.send();
   var nextDocId = xhr.responseText; 
-  return {"doc_id": nextDocId };
+  setCookie("nextDocId", nextDocId, 60)
+  return {"doc_id": nextDocId.slice(0, 15) };
 }
 
 // pings the backend to retrieve the 
@@ -171,6 +178,9 @@ function addTagToText(text) {
         indexOfText += 1 
     } else {
         if (text.charAt(indexOfText) == html.charAt(i)) {
+          if (indexOfText == 0) {
+            firstIndex = i;
+          }
           indexOfText += 1
         } else {
           indexOfText = 0; 
@@ -181,9 +191,9 @@ function addTagToText(text) {
 
   lastIndex = i;
   var newHtml = html.substring(0, firstIndex) 
-  newHtml += '<div id="targetText" class="targetText">';
+  newHtml += '<span id="targetText" class="targetText">';
   newHtml += html.substring(firstIndex, lastIndex);
-  newHtml +=  '</div>'
+  newHtml +=  '</span>'
   newHtml += html.substring(lastIndex);
   $("#newsarticle").html(newHtml);
 }
