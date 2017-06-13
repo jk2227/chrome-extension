@@ -191,10 +191,12 @@ function addTagToText(text) {
   }
 
   lastIndex = i;
+  console.log(firstIndex);
+  console.log(lastIndex);
   var newHtml = html.substring(0, firstIndex) 
-  newHtml += '<span id="targetText" class="targetText">';
+  newHtml += '<div id="targetText" class="targetText">';
   newHtml += html.substring(firstIndex, lastIndex);
-  newHtml +=  '</span>'
+  newHtml +=  '</div>'
   newHtml += html.substring(lastIndex);
   $("#newsarticle").html(newHtml);
 }
