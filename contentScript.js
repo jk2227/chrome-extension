@@ -15,30 +15,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 // public IP for backend in EC2 
 var EBURL = "http://ec2-54-89-85-115.compute-1.amazonaws.com:5000"
 
-// if we are on a URL that contains http://www3.nhk.or.jp/ and... 
-// (1) we have just started and on http://www3.nhk.or.jp/news/easy/ 
-// then we call the backend to retrieve a docId and then
-// navigate to the corresponding page or 
-// (2)we are already on a document of interest
-// we check the cookies to check whether the user has UUID 
-// in the cookies under "elanduid2"; if not, it sets it
-// then we ping the backend to retrieve the text 
-// within the article that we wish to highlight to the users
-// afterwards, we scroll down to the div that would gauge
-// a user's understanding
-if (hasStarted()) {
-  if (getCurrentDocId() == "easy") {
-    var response = getId(); 
-    navigate(response["doc_id"])
-  } else {
-    checkCookie();
-    var response = getText(); 
-    executeScript(response);
-    $('html,body').animate({
-        scrollTop: $("#myPopup").offset().top - 100},
-        'slow');
-  }
-}
+$(document).ready(function() {
+    if (hasStarted()) {
+      if (getCurrentDocId() == "easy") {
+        var response = getId(); 
+        navigate(response["doc_id"])
+      } else {
+        checkCookie();
+        var response = getText(); 
+        executeScript(response);
+        $('html,body').animate({
+            scrollTop: $("#myPopup").offset().top - 100},
+            'slow');
+      }
+    }
+});
 
 // checks whether URL contains http://www3.nhk.or.jp/
 function hasStarted() {
@@ -99,6 +90,9 @@ function getText() {
   var xhr = new XMLHttpRequest();
   console.log("doc id");
   console.log(docId);
+
+  console.log("Sending request to...")
+  console.log(EBURL + "/text/"+ docId +"/");
   xhr.open("GET", EBURL + "/text/"+ docId +"/", false);
   xhr.send();
   var text = xhr.responseText; 
@@ -191,8 +185,6 @@ function addTagToText(text) {
   }
 
   lastIndex = i;
-  console.log(firstIndex);
-  console.log(lastIndex);
   var newHtml = html.substring(0, firstIndex) 
   newHtml += '<div id="targetText" class="targetText">';
   newHtml += html.substring(firstIndex, lastIndex);
