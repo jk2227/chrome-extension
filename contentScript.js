@@ -185,10 +185,16 @@ function addTagToText(text) {
   }
 
   lastIndex = i;
-  var newHtml = html.substring(0, firstIndex) 
-  newHtml += '<div id="targetText" class="targetText">';
+  var newHtml = html.substring(0, firstIndex);
+  var tag = '<div id="targetText" class="targetText">'; 
+  if (newHtml.substring(newHtml.length-6) == '<ruby>') {
+    newHtml = newHtml.substring(0, newHtml.length-6);
+    tag += '<ruby>'
+  } 
+  newHtml += tag;
   newHtml += html.substring(firstIndex, lastIndex);
   newHtml +=  '</div>'
+  console.log(newHtml);
   newHtml += html.substring(lastIndex);
   $("#newsarticle").html(newHtml);
 }
