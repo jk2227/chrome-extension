@@ -24,9 +24,11 @@ $(document).ready(function() {
         checkCookie();
         var response = getText(); 
         executeScript(response);
-        $('html,body').animate({
+        $(function() {
+          $('html,body').animate({
             scrollTop: $("#myPopup").offset().top - 100},
             'slow');
+        });
       }
     }
 });
