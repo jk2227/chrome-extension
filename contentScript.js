@@ -24,11 +24,12 @@ $(document).ready(function() {
         checkCookie();
         var response = getText(); 
         executeScript(response);
-        $(function() {
-          $('html,body').animate({
-            scrollTop: $("#myPopup").offset().top - 100},
-            'slow');
-        });
+        $(window).scrollTo($("#myPopup"));
+        // $(function() {
+        //   $('html,body').animate({
+        //     scrollTop: $("#myPopup").offset().top },
+        //     'slow');
+        // });
       }
     }
 });

@@ -19,7 +19,7 @@
     {
       "matches": ["<all_urls>"], 
       "css": ["contentScript.css"],
-      "js": ["jquery.js", "contentScript.js"]
+      "js": ["jquery.js", "contentScript.js", "jquery.scrollTo-2.1.2/jquery.scrollTo.min.js"]
     }
   ],
   "permissions": [
