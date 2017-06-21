@@ -91,10 +91,7 @@ function getText() {
   var docId = getCurrentDocId(); 
 
   var xhr = new XMLHttpRequest();
-  console.log("doc id");
-  console.log(docId);
 
-  console.log("Sending request to...")
   console.log(EBURL + "/text/"+ docId +"/");
   xhr.open("GET", EBURL + "/text/"+ docId +"/", false);
   xhr.send();
@@ -148,8 +145,10 @@ function executeScript(response) {
 // we open the div targetText in the first index and 
 // close the div in the last index 
 function addTagToText(text) {
-  console.log(text);
   text = text.trim();
+  text = text.replace("＜", "【");
+  text = text.replace("＞", "】");
+  console.log(text);
   var i = 0;
   var indexOfText = 0; 
   var firstIndex = 0;
@@ -197,7 +196,6 @@ function addTagToText(text) {
   newHtml += tag;
   newHtml += html.substring(firstIndex, lastIndex);
   newHtml +=  '</div>'
-  console.log(newHtml);
   newHtml += html.substring(lastIndex);
   $("#newsarticle").html(newHtml);
 }
