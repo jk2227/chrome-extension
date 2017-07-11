@@ -3,7 +3,7 @@
 
   "name": "Language Learning Tool Chrome Extension",
   "description": "Extension for a project Prof. Erik Andersen and Ph.D. candidate Shuhan Wang.",
-  "version": "1.136",
+  "version": "1.14",
   "browser_action": {
     "default_icon": "images/erik_headshot.png"
   },
@@ -25,6 +25,7 @@
   "permissions": [
     "activeTab",
     "storage",
+    "unlimitedStorage",
     "*://*/",
     "http://*/",
     "https://*/",

@@ -31,24 +31,13 @@ $(document).ready(function() {
               if (obj['user_id'] == null) {
                 valuesToSet['user_id'] = e['user_id'];
                 valuesToSet['jrec'] = e['jrec'];
-                // valuesToSet['doc_id'] = e['doc_id'];
-                // valuesToSet['text'] = e['text'];
+                valuesToSet['doc_id'] = e['doc_id'];
+                valuesToSet['text'] = e['text'];
               } 
               chrome.storage.local.set(valuesToSet, function() {
-                $.ajax({
-                 type: 'POST',
-                 contentType: 'application/json',
-                 processData: false, 
-                 traditional: true,
-                 data: e['jrec'],
-                 url: EBURL + '/get_request_id/',
-                 success: function (id) {
-                    navigate(id);
-                  },
-                  error: function(error) {
-                    console.log(error);
-                  }
-                });
+                chrome.storage.local.get(['doc_id'], function(d) {
+                  navigate(d['doc_id'])
+                })
               });
             },
             error: function(error) {
@@ -58,39 +47,27 @@ $(document).ready(function() {
         });
       } else {
         chrome.storage.local.get(null, function(e) {
-          $.ajax({
-                 type: 'POST',
-                 contentType: 'application/json',
-                 processData: false, 
-                 traditional: true,
-                 data: e['jrec'],
-                 url: EBURL + '/get_request_text/',
-                 success: function (text) {
-                    addTagToText(text);
-                    document.body.style.background = "black";
-                    $(".contentWrap").css('background', 'unset');
-                    $("#enq_answer_disp").css('background', 'unset');
-                    $("#enq_ansbak").css('background', 'unset');
-                    $("#side").append("<div class='overlay'></div>");
-                    $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
+          text = e['text'];
+          addTagToText(text);
+          document.body.style.background = "black";
+          $(".contentWrap").css('background', 'unset');
+          $("#enq_answer_disp").css('background', 'unset');
+          $("#enq_ansbak").css('background', 'unset');
+          $("#side").append("<div class='overlay'></div>");
+          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
                     
-                    document.getElementById("yesButtonId").addEventListener("click", function() {
-                      submitAnswerAndGetNext(true)
-                    }, false);
-                    document.getElementById("noButtonId").addEventListener("click", function() {
-                      submitAnswerAndGetNext(false)
-                    }, false);
+          document.getElementById("yesButtonId").addEventListener("click", function() {
+            submitAnswerAndGetNext(true)
+          }, false);
+          
+          document.getElementById("noButtonId").addEventListener("click", function() {
+            submitAnswerAndGetNext(false)
+          }, false);
 
-                    $('.overlay').fadeIn(300);
-                    $('html,body').animate({
-                      scrollTop: $("#myPopup").offset().top - 100},
-                      'slow');
-                  },
-                  error: function(error) {
-                    console.log(error);
-                  }
-                });
-
+          $('.overlay').fadeIn(300);
+          $('html,body').animate({
+            scrollTop: $("#myPopup").offset().top - 100},
+          'slow');
         });
       }
     } 
@@ -199,24 +176,15 @@ function submitAnswerAndGetNext(userResponse) {
                  traditional: true,
                  data: e['jrec'],
                  url: EBURL + '/record_response/' + userResponse,
-                 success: function (jrec) {
-                      chrome.storage.local.set({ 'jrec': jrec['jrec'] }, function() {
-                      $.ajax({
-                       type: 'POST',
-                       contentType: 'application/json',
-                       processData: false, 
-                       traditional: true,
-                       data: jrec['jrec'],
-                       url: EBURL + '/get_request_id/',
-                       success: function (id) {
-                          navigate(id);
-                        },
-                        error: function(error) {
-                          console.log(error);
-                        }
+                 success: function (d) {
+                    chrome.storage.local.set(
+                      { 
+                        'jrec': d['jrec'], 
+                        'doc_id': d['next_doc_id'], 
+                        'text': d['next_text'] 
+                      }, function() {
+                        navigate(d['next_doc_id'])
                       });
-                    });
-                    
                 },
                   error: function(error) {
                     console.log(error);
