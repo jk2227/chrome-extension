@@ -16,10 +16,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 // public IP for backend in EC2 
 var EBURL = "http://ec2-54-89-85-115.compute-1.amazonaws.com:5000"
 
+function convertDocIdToId(doc_id) {
+  return doc_id.substr(0,15); 
+}
+
+var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 'text']
+
 $(document).ready(function() {
     if (hasStarted()) {
       if (justStarted()) {
-        chrome.storage.local.get(null, function(obj) {
+        chrome.storage.local.get(storage_keys, function(obj) {
           $.ajax({
             type: 'GET',
             url: EBURL + '/initialize',
@@ -46,7 +52,7 @@ $(document).ready(function() {
           });
         });
       } else {
-        chrome.storage.local.get(null, function(e) {
+        chrome.storage.local.get(storage_keys, function(e) {
           text = e['text'];
           addTagToText(text);
           document.body.style.background = "black";
@@ -88,7 +94,8 @@ function justStarted() {
 
 // given a docId, navigates page to article corresponding to it
 function navigate(docId) {
-  window.location.href = 'http://www3.nhk.or.jp/news/easy/' + docId + '/' + docId + '.html'
+  id = convertDocIdToId(docId);
+  window.location.href = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
 }
 
 // given a text, adds the text in a div with 
@@ -168,22 +175,24 @@ function addTagToText(text) {
 // submit user response (true or false) to the backend
 // and get the next document id 
 function submitAnswerAndGetNext(userResponse) {
-  chrome.storage.local.get(null, function(e) {
+  chrome.storage.local.get(storage_keys, function(e) {
+          console.log(e);
           $.ajax({
                  type: 'POST',
                  contentType: 'application/json',
                  processData: false, 
                  traditional: true,
-                 data: e['jrec'],
+                 data: JSON.stringify(e),
                  url: EBURL + '/record_response/' + userResponse,
                  success: function (d) {
                     chrome.storage.local.set(
                       { 
                         'jrec': d['jrec'], 
                         'doc_id': d['next_doc_id'], 
-                        'text': d['next_text'] 
+                        'text': d['next_text'],
+                        'sequence_id': e['sequence_id'] + 1
                       }, function() {
-                        navigate(d['next_doc_id'])
+                        navigate(d['next_doc_id']);
                       });
                 },
                   error: function(error) {
