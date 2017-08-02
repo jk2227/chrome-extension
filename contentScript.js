@@ -73,8 +73,14 @@ $(document).ready(function() {
             submitAnswerAndGetNext(false, seen)
           }, false);
 
-          document.getElementById("noButtonId").addEventListener("click", function() {
+          document.getElementById("quitButtonId").addEventListener("click", function() {
             alert("Must add link!"); // SHOW SURVEY HERE!!!!
+            chrome.storage.local.clear(function() {
+              var error = chrome.runtime.lastError;
+              if (error) {
+                console.error(error);
+              }
+            }); // just clearing storage for now 
           }, false);
 
           $('.overlay').fadeIn(300);
