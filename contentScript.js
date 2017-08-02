@@ -14,13 +14,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 });
 
 // public IP for backend in EC2 
-var EBURL = "http://ec2-54-89-85-115.compute-1.amazonaws.com:5000"
+var EBURL = "http://ec2-52-23-243-230.compute-1.amazonaws.com:5000"
 
 function convertDocIdToId(doc_id) {
   return doc_id.substr(0,15); 
 }
 
-var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 'text']
+var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 'text', 'info']
 
 $(document).ready(function() {
     if (hasStarted()) {
@@ -39,6 +39,7 @@ $(document).ready(function() {
                 valuesToSet['jrec'] = e['jrec'];
                 valuesToSet['doc_id'] = e['doc_id'];
                 valuesToSet['text'] = e['text'];
+                valuesToSet['info'] = e['info'];
               } 
               chrome.storage.local.set(valuesToSet, function() {
                 chrome.storage.local.get(['doc_id'], function(d) {
@@ -60,14 +61,20 @@ $(document).ready(function() {
           $("#enq_answer_disp").css('background', 'unset');
           $("#enq_ansbak").css('background', 'unset');
           $("#side").append("<div class='overlay'></div>");
-          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
+          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> <button type='button' class='noButton' id='quitButtonId'> Quit </button> </span>");
+
+          var seen = new Date().getTime()
                     
           document.getElementById("yesButtonId").addEventListener("click", function() {
-            submitAnswerAndGetNext(true)
+            submitAnswerAndGetNext(true, seen)
           }, false);
           
           document.getElementById("noButtonId").addEventListener("click", function() {
-            submitAnswerAndGetNext(false)
+            submitAnswerAndGetNext(false, seen)
+          }, false);
+
+          document.getElementById("noButtonId").addEventListener("click", function() {
+            alert("Must add link!"); // SHOW SURVEY HERE!!!!
           }, false);
 
           $('.overlay').fadeIn(300);
@@ -174,8 +181,10 @@ function addTagToText(text) {
 
 // submit user response (true or false) to the backend
 // and get the next document id 
-function submitAnswerAndGetNext(userResponse) {
-  chrome.storage.local.get(storage_keys, function(e) {
+function submitAnswerAndGetNext(userResponse, seen) {
+  chrome.storage.local.get(storage_keys, function(e) { 
+          e['answered'] = new Date().getTime()
+          e['seen'] = seen
           console.log(e);
           $.ajax({
                  type: 'POST',
@@ -190,6 +199,7 @@ function submitAnswerAndGetNext(userResponse) {
                         'jrec': d['jrec'], 
                         'doc_id': d['next_doc_id'], 
                         'text': d['next_text'],
+                        'info': d['next_info'],
                         'sequence_id': e['sequence_id'] + 1
                       }, function() {
                         navigate(d['next_doc_id']);
