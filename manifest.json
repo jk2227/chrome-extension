@@ -30,5 +30,6 @@
     "http://*/",
     "https://*/",
     "https://ajax.googleapis.com/"
-  ]
+  ],
+  "web_accessible_resources": [ "final_page.htm" ]
 }

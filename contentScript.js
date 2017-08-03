@@ -74,7 +74,7 @@ $(document).ready(function() {
           }, false);
 
           document.getElementById("quitButtonId").addEventListener("click", function() {
-            alert("Must add link!"); // SHOW SURVEY HERE!!!!
+			show_final_page();
             chrome.storage.local.clear(function() {
               var error = chrome.runtime.lastError;
               if (error) {
@@ -109,6 +109,11 @@ function justStarted() {
 function navigate(docId) {
   id = convertDocIdToId(docId);
   window.location.href = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
+}
+
+// isplay final page 
+function show_final_page() {
+	window.open(chrome.extension.getURL('final_page.htm'));
 }
 
 // given a text, adds the text in a div with 
