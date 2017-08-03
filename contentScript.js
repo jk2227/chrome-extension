@@ -61,7 +61,7 @@ $(document).ready(function() {
           $("#enq_answer_disp").css('background', 'unset');
           $("#enq_ansbak").css('background', 'unset');
           $("#side").append("<div class='overlay'></div>");
-          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> <button type='button' class='noButton' id='quitButtonId'> Quit </button> </span>");
+          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> <button type='button' class='quitButton' id='quitButtonId'> Quit </button> </span>");
 
           var seen = new Date().getTime()
                     
@@ -74,13 +74,7 @@ $(document).ready(function() {
           }, false);
 
           document.getElementById("quitButtonId").addEventListener("click", function() {
-			show_final_page();
-            chrome.storage.local.clear(function() {
-              var error = chrome.runtime.lastError;
-              if (error) {
-                console.error(error);
-              }
-            }); // just clearing storage for now 
+			      show_final_page();
           }, false);
 
           $('.overlay').fadeIn(300);
@@ -196,7 +190,6 @@ function submitAnswerAndGetNext(userResponse, seen) {
   chrome.storage.local.get(storage_keys, function(e) { 
           e['answered'] = new Date().getTime()
           e['seen'] = seen
-          console.log(e);
           $.ajax({
                  type: 'POST',
                  contentType: 'application/json',

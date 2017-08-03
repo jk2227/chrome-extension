@@ -106,7 +106,27 @@
     -webkit-transition-duration:0.4s;
     transition-duration: 0.4s;
     pointer-events: auto;
-    background-color: #d9534f; /* Green */
+    background-color: #d9534f; /* Red */
+    border: none;
+    color: white; 
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.quitButton:hover {
+    cursor:pointer;
+    background-color: white;
+    color: purple;
+}
+
+.quitButton {
+    -webkit-transition-duration:0.4s;
+    transition-duration: 0.4s;
+    pointer-events: auto;
+    background-color: purple; /* Red */
     border: none;
     color: white; 
     padding: 15px 32px;

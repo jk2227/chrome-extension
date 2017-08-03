@@ -1,9 +1,28 @@
+// public IP for backend in EC2 
+var EBURL = "http://ec2-52-23-243-230.compute-1.amazonaws.com:5000"
+
 document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById("summary").innerHTML = "55"; // To Ji Hun: pass in user summary here！
+	document.getElementById("summary").innerHTML = "55"; 
 	document.forms[0].onsubmit = function(e) {
 		e.preventDefault(); // Prevent submission
 		response = getRadio("japanese") + getRadio("difficulty") + getRadio("diversity") + getRadio("like");
-		alert(response);   // To Ji Hun:  Save user response to DB here!
+		chrome.storage.local.get(['user_id', 'jrec'], function(d) {
+			d['responses'] = response
+			$.ajax({
+                 type: 'POST',
+                 contentType: 'application/json',
+                 processData: false, 
+                 traditional: true,
+                 data: JSON.stringify(d),
+                 url: EBURL + '/record_user/',
+                 success: function (f) {
+                 	alert("Thank you!")
+                },
+                  error: function(error) {
+                    console.log(error);
+                  }
+                });
+		});
 	};   
 });
 
