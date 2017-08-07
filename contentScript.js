@@ -5,9 +5,7 @@
 // the you will be alerted so 
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   if (!hasStarted()) {
-    chrome.storage.local.set({'sequence_id': 0}, function() {
-      window.location.href = 'http://www3.nhk.or.jp/news/easy/';
-    });
+    show_intro();
   } else {
     alert("already started!");
   }
@@ -61,7 +59,7 @@ $(document).ready(function() {
           $("#enq_answer_disp").css('background', 'unset');
           $("#enq_ansbak").css('background', 'unset');
           $("#side").append("<div class='overlay'></div>");
-          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> <button type='button' class='quitButton' id='quitButtonId'> Quit </button> </span>");
+          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
 
           var seen = new Date().getTime()
                     
@@ -71,10 +69,6 @@ $(document).ready(function() {
           
           document.getElementById("noButtonId").addEventListener("click", function() {
             submitAnswerAndGetNext(false, seen)
-          }, false);
-
-          document.getElementById("quitButtonId").addEventListener("click", function() {
-			      show_final_page();
           }, false);
 
           $('.overlay').fadeIn(300);
@@ -103,6 +97,11 @@ function justStarted() {
 function navigate(docId) {
   id = convertDocIdToId(docId);
   window.location.href = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
+}
+
+// isplay final page 
+function show_intro() {
+  window.open(chrome.extension.getURL('welcome_page.htm'));
 }
 
 // isplay final page 
@@ -198,6 +197,17 @@ function submitAnswerAndGetNext(userResponse, seen) {
                  data: JSON.stringify(e),
                  url: EBURL + '/record_response/' + userResponse,
                  success: function (d) {
+                  if (d['end']) {
+                    chrome.storage.local.set({
+                      'jrec': d['jrec'], 
+                      'doc_id':d['doc_id'],
+                      'text': d['text'],
+                      'info': d['info']
+                    }, function() {
+                      show_final_page();
+                      window.close();
+                    });
+                  } else {
                     chrome.storage.local.set(
                       { 
                         'jrec': d['jrec'], 
@@ -208,6 +218,7 @@ function submitAnswerAndGetNext(userResponse, seen) {
                       }, function() {
                         navigate(d['next_doc_id']);
                       });
+                  }
                 },
                   error: function(error) {
                     console.log(error);

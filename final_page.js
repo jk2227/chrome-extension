@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
                  data: JSON.stringify(d),
                  url: EBURL + '/record_user/',
                  success: function (f) {
-                 	alert("Thank you!")
+                 	alert("Thank you!");
+                 	window.close()
                 },
                   error: function(error) {
                     console.log(error);
