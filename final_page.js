@@ -2,7 +2,9 @@
 var EBURL = "http://ec2-52-23-243-230.compute-1.amazonaws.com:5000"
 
 document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById("summary").innerHTML = "55"; 
+	chrome.storage.local.get('user_summary', function(b) {
+		document.getElementById("summary").innerHTML = b['user_summary']
+	})
 	document.forms[0].onsubmit = function(e) {
 		e.preventDefault(); // Prevent submission
 		response = getRadio("japanese") + getRadio("difficulty") + getRadio("diversity") + getRadio("like");
@@ -16,8 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
                  data: JSON.stringify(d),
                  url: EBURL + '/record_user/',
                  success: function (f) {
-                 	alert("Thank you!");
-                 	window.close()
+                 	chrome.storage.local.set({
+                      'jrec': f['jrec'], 
+                      'doc_id': f['doc_id'],
+                      'text': f['text'],
+                      'info': f['info']
+                    }, function() {
+                      alert("Thank you!");
+                      window.close();
+                    });
                 },
                   error: function(error) {
                     console.log(error);

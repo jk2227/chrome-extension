@@ -199,10 +199,7 @@ function submitAnswerAndGetNext(userResponse, seen) {
                  success: function (d) {
                   if (d['end']) {
                     chrome.storage.local.set({
-                      'jrec': d['jrec'], 
-                      'doc_id':d['doc_id'],
-                      'text': d['text'],
-                      'info': d['info']
+                      'user_summary': d['user_summary'] 
                     }, function() {
                       show_final_page();
                       window.close();
