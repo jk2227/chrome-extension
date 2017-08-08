@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.forms[0].onsubmit = function(e) {
 		e.preventDefault(); // Prevent submission
 		response = getRadio("japanese") + getRadio("difficulty") + getRadio("diversity") + getRadio("like");
-		alert(response);
 		chrome.storage.local.get(['user_id', 'jrec'], function(d) {
 			d['responses'] = response
 			$.ajax({
