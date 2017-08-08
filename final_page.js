@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.forms[0].onsubmit = function(e) {
 		e.preventDefault(); // Prevent submission
 		response = getRadio("japanese") + getRadio("difficulty") + getRadio("diversity") + getRadio("like");
+		alert(response);
 		chrome.storage.local.get(['user_id', 'jrec'], function(d) {
 			d['responses'] = response
 			$.ajax({
@@ -41,4 +42,5 @@ function getRadio(radio_name) {
 	for (i=0;i<radios.length;i++)
 		if (radios[i].checked)
 			return radios[i].value;
+	return "0";
 }
