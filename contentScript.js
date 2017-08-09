@@ -7,7 +7,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   if (!hasStarted()) {
     show_intro();
   } else {
-    alert("already started!");
+    alert("closing");
+    window.close();
   }
 });
 
