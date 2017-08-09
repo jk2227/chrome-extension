@@ -41,4 +41,5 @@ function getRadio(radio_name) {
 	for (i=0;i<radios.length;i++)
 		if (radios[i].checked)
 			return radios[i].value;
+	return "0";
 }
