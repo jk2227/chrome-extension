@@ -53,12 +53,14 @@ $(document).ready(function() {
       } else {
         chrome.storage.local.get(storage_keys, function(e) {
           text = e['text'];
+          setTimeout(function(){}, 1000);
           addTagToText(text);
           document.body.style.background = "black";
           $(".contentWrap").css('background', 'unset');
+          $("#side").append("<div class='overlay'></div>");
           $("#enq_answer_disp").css('background', 'unset');
           $("#enq_ansbak").css('background', 'unset');
-          $("#side").append("<div class='overlay'></div>");
+          $("#main_enqdiv").hide();
           $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
 
           var seen = new Date().getTime()
@@ -171,12 +173,25 @@ function addTagToText(text) {
 
   lastIndex = i;
   var newHtml = html.substring(0, firstIndex);
+  var addSpan = false 
+  var spanClass = '<ruby><span class="under">'
+  if (newHtml.substring(newHtml.length - spanClass.length) == spanClass) {
+    addSpan = true
+  } 
   var tag = '<div id="targetText" class="targetText">'; 
   if (newHtml.substring(newHtml.length-6) == '<ruby>') {
     newHtml = newHtml.substring(0, newHtml.length-6);
     tag += '<ruby>'
   } 
-  newHtml += tag;
+  if (addSpan) {
+    newHtml = newHtml.substring(0, newHtml.length - spanClass.length);
+    newHtml += tag;
+    newHtml += spanClass; 
+  }
+  else {
+    newHtml += tag;
+  }
+
   newHtml += html.substring(firstIndex, lastIndex);
   newHtml +=  '</div>'
   newHtml += html.substring(lastIndex);
