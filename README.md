@@ -1,4 +1,4 @@
-# A Japanese Learning chrome extension that recommends appropriate reading texts for you
+# Japanese Learning Chrome Extension
 
 This extention aims to recommend reading texts that are appropriate for you. After using it, you will also be given an estimation of how well you understand the articles in NHK Easy,  a Japanese news website for language learners.
 
