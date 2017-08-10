@@ -1,7 +1,9 @@
-# Language Learning Tool Chrome Extension
+# A Japanese Learning chrome extension that recommends appropriate reading texts for you
 
-This extension is part of a language learning tool for a project that Professor Erik Andersen and Ph.D. candidate Shuhan Wang is working on. 
+This extention aims to recommend reading texts that are appropriate for you. After using it, you will also be given an estimation of how well you understand the articles in NHK Easy,  a Japanese news website for language learners.
 
-The idea is for the extension to take users who are trying to learn Japanese to didactic adventure throughout the web, taking excerpts from actual articles from NHK and testing their knowledge... 
+To start, just open a new tab and click on our extension! Note that the extension may take a few seconds to initialize, and you will see the NHK Easy homepage during that time. TODO: add description of enable/disable functionality here.
+
+We hope you could enjoy it. Thank you!
 
 ![Screenshot](images/screenshot.png)
