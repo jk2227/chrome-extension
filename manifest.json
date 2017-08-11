@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Japanese Learning Chrome Extension",
-  "description": "A Japanese Learning chrome extension that recommends appropriate reading texts for you",
+  "description": "A Japanese learning chrome extension that recommends appropriate reading texts for you",
   "version": "1.139",
   "browser_action": {
     "default_icon": "images/icon_16.png"
@@ -31,5 +31,5 @@
     "https://*/",
     "https://ajax.googleapis.com/"
   ],
-  "web_accessible_resources": [ "final_page.htm" ]
+  "web_accessible_resources": [ "welcome_page.htm", "final_page.htm" ]
 }
