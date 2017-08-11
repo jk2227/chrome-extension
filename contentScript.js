@@ -3,13 +3,19 @@
 // http://www3.nhk.or.jp/news/easy/
 // if it is the case that you are already in NHK,
 // the you will be alerted so 
+
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
-  if (!hasStarted()) {
-    show_intro();
-  } else {
-    alert("closing");
-    window.close();
-  }
+  chrome.storage.local.set({
+    "activated_language_learning": request.activated
+  }, function(){
+    if (request.activated && !hasStarted()) {
+      show_intro();
+    } else if (request.activated) {
+      initialize();
+    } else {
+      window.location.href = window.location.href;
+    }
+  });
 });
 
 // public IP for backend in EC2 
@@ -23,69 +29,27 @@ var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 't
 
 var POPUPONSCREEN = false; 
 
-$(document).ready(function() {
-    if (hasStarted()) {
-      if (justStarted()) {
-        chrome.storage.local.get(storage_keys, function(obj) {
-          $.ajax({
-            type: 'GET',
-            url: EBURL + '/initialize',
-            success: function (e) {
-              var valuesToSet = {
-                'sequence_id': 0, 
-                'session_id': e['session_id'] 
-              }; 
-              if (obj['user_id'] == null) {
-                valuesToSet['user_id'] = e['user_id'];
-                valuesToSet['jrec'] = e['jrec'];
-                valuesToSet['doc_id'] = e['doc_id'];
-                valuesToSet['text'] = e['text'];
-                valuesToSet['info'] = e['info'];
-              } 
-              chrome.storage.local.set(valuesToSet, function() {
-                chrome.storage.local.get(['doc_id'], function(d) {
-                  navigate(d['doc_id'])
-                })
-              });
-            },
-            error: function(error) {
-              console.log(error);
-            }
-          });
-        });
-      } else {
-        chrome.storage.local.get(storage_keys, function(e) {
-          text = e['text'];
-          addTagToText(text);
+chrome.storage.local.get("activated_language_learning", function(r) {
+  if (! "activated_language_learning" in r || 
+    !r["activated_language_learning"]) {
 
-          document.body.style.background = "black";
-          $(".contentWrap").css('background', 'unset');
-          $("#side").append("<div class='overlay'></div>");
-          $("#enq_answer_disp").css('background', 'unset');
-          $("#enq_ansbak").css('background', 'unset');
-          $("#main_enqdiv").hide();
-          $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
+  } else {
+    $(document).ready(function() {
+      if (hasStarted()) {
+        if (justStarted()) {
+          initialize();
+        } else {
+          highlightText();
+        }
+      } 
+  });
 
-          var seen = new Date().getTime()
-                    
-          document.getElementById("yesButtonId").addEventListener("click", function() {
-            submitAnswerAndGetNext(true, seen)
-          }, false);
-          
-          document.getElementById("noButtonId").addEventListener("click", function() {
-            submitAnswerAndGetNext(false, seen)
-          }, false);
+  }
+})
 
-          $('.overlay').fadeIn(300);
-          scrollToMyPopUp();
-        });
-      }
-    } 
-});
 
 
 function scrollToMyPopUp() {
-  console.log("hello");
     $('html,body').animate({
             scrollTop: $("#myPopup").offset().top - 100
           },
@@ -94,10 +58,68 @@ function scrollToMyPopUp() {
             POPUPONSCREEN = $("#myPopup").isOnScreen();
             if (!POPUPONSCREEN) {
               scrollToMyPopUp();
+            } else {
+              var seen = new Date().getTime()
+                      
+              document.getElementById("yesButtonId").addEventListener("click", function() {
+                submitAnswerAndGetNext(true, seen)
+              }, false);
+              
+              document.getElementById("noButtonId").addEventListener("click", function() {
+                submitAnswerAndGetNext(false, seen)
+              }, false);
             }
           });
 } 
 
+function initialize() {
+  chrome.storage.local.get(storage_keys, function(obj) {
+            $.ajax({
+              type: 'GET',
+              url: EBURL + '/initialize',
+              success: function (e) {
+                var valuesToSet = {
+                  'sequence_id': 0, 
+                  'session_id': e['session_id'] 
+                }; 
+                if (obj['user_id'] == null) {
+                  valuesToSet['user_id'] = e['user_id'];
+                  valuesToSet['jrec'] = e['jrec'];
+                  valuesToSet['doc_id'] = e['doc_id'];
+                  valuesToSet['text'] = e['text'];
+                  valuesToSet['info'] = e['info'];
+                } 
+                chrome.storage.local.set(valuesToSet, function() {
+                  chrome.storage.local.get(['doc_id'], function(d) {
+                    navigate(d['doc_id'])
+                  })
+                });
+              },
+              error: function(error) {
+                console.log(error);
+              }
+            });
+          });
+}
+
+function highlightText() {
+  chrome.storage.local.get(storage_keys, function(e) {
+            text = e['text'];
+            addTagToText(text);
+
+            document.body.style.background = "black";
+            $(".contentWrap").css('background', 'unset');
+            $("#side").append("<div class='overlay'></div>");
+            $("#enq_answer_disp").css('background', 'unset');
+            $("#enq_ansbak").css('background', 'unset');
+            $("#main_enqdiv").hide();
+            $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
+
+            $('.overlay').fadeIn(300);
+            scrollToMyPopUp();
+          });
+
+}
 // checks whether URL contains http://www3.nhk.or.jp/
 function hasStarted() {
   return window.location.href.indexOf("http://www3.nhk.or.jp/") > -1; 
@@ -119,7 +141,7 @@ function navigate(docId) {
 
 // isplay final page 
 function show_intro() {
-  window.open(chrome.extension.getURL('welcome_page.htm'));
+  window.location.href = chrome.extension.getURL('welcome_page.htm');
 }
 
 // isplay final page 
