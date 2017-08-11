@@ -1,35 +1,30 @@
-// when clicking on the chrome extension,
-// listener helps you navigate to 
-// http://www3.nhk.or.jp/news/easy/
-// if it is the case that you are already in NHK,
-// the you will be alerted so 
-
-chrome.runtime.onMessage.addListener(function(request, sender, callback) {
-  chrome.storage.local.set({
-    "activated_language_learning": request.activated
-  }, function(){
-    if (request.activated && !hasStarted()) {
-      show_intro();
-    } else if (request.activated) {
-      initialize();
-    } else {
-      window.location.href = window.location.href;
-    }
-  });
-});
-
 // public IP for backend in EC2 
 var EBURL = "http://ec2-52-23-243-230.compute-1.amazonaws.com:5000"
-
-function convertDocIdToId(doc_id) {
-  return doc_id.substr(0,15); 
-}
 
 var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 'text', 'info']
 
 var POPUPONSCREEN = false; 
 
-chrome.storage.local.get("activated_language_learning", function(r) {
+var LIMIT = 39; 
+
+chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+  chrome.storage.local.set({ "activated_language_learning": request.activated}, 
+    function(){
+      chrome.storage.local.get(['sequence_id', 'doc_id'],
+       function(obj) {
+        var needsInit = !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+        if (request.activated && needsInit) {
+          show_intro();
+        } else if (request.activated) {
+          navigate(obj['doc_id'], buildURL(obj["doc_id"]) != window.location.href)
+        } else {
+          window.location.href = window.location.href;
+        }
+      });
+  });
+});
+
+chrome.storage.local.get(["activated_language_learning", "doc_id"], function(r) {
   if (! "activated_language_learning" in r || 
     !r["activated_language_learning"]) {
 
@@ -38,6 +33,8 @@ chrome.storage.local.get("activated_language_learning", function(r) {
       if (hasStarted()) {
         if (justStarted()) {
           initialize();
+        } else if (buildURL(r["doc_id"]) != window.location.href) {
+          navigate(r["doc_id"], false);
         } else {
           highlightText();
         }
@@ -47,7 +44,9 @@ chrome.storage.local.get("activated_language_learning", function(r) {
   }
 })
 
-
+function convertDocIdToId(doc_id) {
+  return doc_id.substr(0,15); 
+}
 
 function scrollToMyPopUp() {
     $('html,body').animate({
@@ -58,17 +57,7 @@ function scrollToMyPopUp() {
             POPUPONSCREEN = $("#myPopup").isOnScreen();
             if (!POPUPONSCREEN) {
               scrollToMyPopUp();
-            } else {
-              var seen = new Date().getTime()
-                      
-              document.getElementById("yesButtonId").addEventListener("click", function() {
-                submitAnswerAndGetNext(true, seen)
-              }, false);
-              
-              document.getElementById("noButtonId").addEventListener("click", function() {
-                submitAnswerAndGetNext(false, seen)
-              }, false);
-            }
+            } 
           });
 } 
 
@@ -91,7 +80,7 @@ function initialize() {
                 } 
                 chrome.storage.local.set(valuesToSet, function() {
                   chrome.storage.local.get(['doc_id'], function(d) {
-                    navigate(d['doc_id'])
+                    navigate(d['doc_id'], false)
                   })
                 });
               },
@@ -117,9 +106,25 @@ function highlightText() {
 
             $('.overlay').fadeIn(300);
             scrollToMyPopUp();
+            var seen = new Date().getTime()
+                      
+              document.getElementById("yesButtonId").addEventListener("click", function() {
+                submitAnswerAndGetNext(true, seen)
+              }, false);
+              
+              document.getElementById("noButtonId").addEventListener("click", function() {
+                submitAnswerAndGetNext(false, seen)
+              }, false);
           });
 
 }
+// checks whether URL contains http://www3.nhk.or.jp/
+function needsInit() {
+  chrome.storage.local.get('sequence_id', function(obj) {
+    return !'sequence_id' in obj || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+  });
+}
+
 // checks whether URL contains http://www3.nhk.or.jp/
 function hasStarted() {
   return window.location.href.indexOf("http://www3.nhk.or.jp/") > -1; 
@@ -133,10 +138,17 @@ function justStarted() {
   return currentUrl[currentUrl.length - 2] == 'easy'
 }
 
-// given a docId, navigates page to article corresponding to it
-function navigate(docId) {
+function buildURL(docId) {
   id = convertDocIdToId(docId);
-  window.location.href = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
+  return 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
+}
+// given a docId, navigates page to article corresponding to it
+function navigate(docId, inNewTab) {
+  if (inNewTab) {
+    window.open(buildURL(docId));
+  } else {
+    window.location.href = buildURL(docId);
+  }
 }
 
 // isplay final page 
@@ -146,7 +158,7 @@ function show_intro() {
 
 // isplay final page 
 function show_final_page() {
-	window.open(chrome.extension.getURL('final_page.htm'));
+	window.location.href = chrome.extension.getURL('final_page.htm');
 }
 
 // given a text, adds the text in a div with 
@@ -266,7 +278,7 @@ function submitAnswerAndGetNext(userResponse, seen) {
                         'info': d['next_info'],
                         'sequence_id': e['sequence_id'] + 1
                       }, function() {
-                        navigate(d['next_doc_id']);
+                        navigate(d['next_doc_id'], false);
                       });
                   }
                 },
