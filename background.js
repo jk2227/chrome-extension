@@ -1,14 +1,52 @@
 var ACTIVATED = false; 
 
+var myTabId = -1;
+
+
+chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+	//alert(request.url);
+	if (myTabId == -1)
+	{
+		chrome.tabs.create({url:request.url, active:true}, function(tab){myTabId = tab.id;});
+		chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+			if (tabId == myTabId) {
+				myTabId = -1;
+				//alert("closed!");
+				chrome.tabs.sendMessage(tab.id, {"activated": false});
+			}
+		});
+	}
+});
+
 chrome.browserAction.onClicked.addListener(function(tab) {
-    ACTIVATED = !ACTIVATED; 
-    if (ACTIVATED) {
-    	chrome.browserAction.setBadgeBackgroundColor({"color":[255,0,0,255]});
-    	chrome.browserAction.setBadgeText({"text":"On"});
-    } else {
-    	chrome.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]});
-    	chrome.browserAction.setBadgeText({"text":""});
-    }
-   
-   chrome.tabs.sendMessage(tab.id, {"activated": ACTIVATED});
+	
+	//alert(myTabId);
+	
+	// In case our extension failed to track the event that our tab is closed,
+	// this will check if our recommendation page exists.
+	if (myTabId != -1) {
+		chrome.tabs.get(myTabId, function(t) {
+			if (chrome.runtime.lastError) {
+				// tab does not exist
+				myTabId = -1;
+				chrome.tabs.sendMessage(tab.id, {"activated": false});
+			}
+		});
+	}
+	
+    if (myTabId != -1) {
+		// Unselect currently selected tab
+		chrome.tabs.query({ active: true }, function(tabs) {
+			if (tabs.length > 0) {
+				chrome.tabs.update(tabs[0].id, {highlighted: false});
+			}
+		});
+		// select the recommendation tab
+		chrome.tabs.update(myTabId, {highlighted: true});
+	} else {
+		//alert("about to send to content");
+		chrome.tabs.sendMessage(tab.id, {"activated": true});
+	}
+	
+  
 });

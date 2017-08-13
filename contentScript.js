@@ -145,7 +145,8 @@ function buildURL(docId) {
 // given a docId, navigates page to article corresponding to it
 function navigate(docId, inNewTab) {
   if (inNewTab) {
-    window.open(buildURL(docId));
+    //window.open(buildURL(docId));
+	chrome.runtime.sendMessage({"url":buildURL(docId)});
   } else {
     window.location.href = buildURL(docId);
   }
@@ -153,7 +154,8 @@ function navigate(docId, inNewTab) {
 
 // isplay final page 
 function show_intro() {
-  window.location.href = chrome.extension.getURL('welcome_page.htm');
+	//window.open(chrome.extension.getURL('welcome_page.htm'));
+	chrome.runtime.sendMessage({"url":chrome.extension.getURL('welcome_page.htm')});
 }
 
 // isplay final page 
