@@ -46,7 +46,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 				if (url != t.url) {
 					myTabId = -1; 
-					navigate({url:"http://www3.nhk.or.jp/news/easy/", "newTab":true});
+					navigate({"url": url, "newTab":true});
 				}
 
 			});
@@ -63,7 +63,20 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 		// select the recommendation tab
 		chrome.tabs.update(myTabId, {highlighted: true});
 	} else {
-		navigate({url:"http://www3.nhk.or.jp/news/easy/", "newTab":true});
+
+		chrome.storage.local.get("doc_id", function(obj) {
+				myTabId = tab.id;
+				if (obj == null) {
+					navigate({"url": "http://www3.nhk.or.jp/news/easy/", "newTab":true}); 
+				}
+				id = obj["doc_id"].substr(0,15); 
+				url = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
+
+				if (url != t.url) {
+					navigate({"url": url, "newTab":true});
+				}
+
+			});
 	}
 	
   
