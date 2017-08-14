@@ -5,16 +5,19 @@ var myTabId = -1;
 
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 	//alert(request.url);
-	if (myTabId == -1)
-	{
-		chrome.tabs.create({url:request.url, active:true}, function(tab){myTabId = tab.id;});
-		chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-			if (tabId == myTabId) {
-				myTabId = -1;
-				//alert("closed!");
-				chrome.tabs.sendMessage(tab.id, {"activated": false});
-			}
-		});
+	if (myTabId == -1) {
+		if (request.newTab) {
+			chrome.tabs.create({url:request.url, active:true}, function(tab){myTabId = tab.id;});
+			chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+				if (tabId == myTabId) {
+					myTabId = -1;
+					//alert("closed!");
+					chrome.tabs.sendMessage(tab.id, {"activated": false});
+				}
+			});
+		} 
+	} else {
+		chrome.tabs.update(myTabId, {url: request.url});
 	}
 });
 

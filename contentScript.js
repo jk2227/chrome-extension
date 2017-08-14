@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
         if (request.activated && needsInit) {
           show_intro();
         } else if (request.activated) {
-          navigate(obj['doc_id'], buildURL(obj["doc_id"]) != window.location.href)
+          navigate(buildURL(obj['doc_id']), buildURL(obj["doc_id"]) != window.location.href)
         } else {
           window.location.href = window.location.href;
         }
@@ -34,7 +34,8 @@ chrome.storage.local.get(["activated_language_learning", "doc_id"], function(r) 
         if (justStarted()) {
           initialize();
         } else if (buildURL(r["doc_id"]) != window.location.href) {
-          navigate(r["doc_id"], false);
+          // allow users to navigate other NHK easy articles
+          // navigate(buildURL(r["doc_id"]), false);
         } else {
           highlightText();
         }
@@ -80,7 +81,7 @@ function initialize() {
                 } 
                 chrome.storage.local.set(valuesToSet, function() {
                   chrome.storage.local.get(['doc_id'], function(d) {
-                    navigate(d['doc_id'], false)
+                    navigate(buildURL(d['doc_id']), false)
                   })
                 });
               },
@@ -144,23 +145,17 @@ function buildURL(docId) {
 }
 // given a docId, navigates page to article corresponding to it
 function navigate(docId, inNewTab) {
-  if (inNewTab) {
-    //window.open(buildURL(docId));
-	chrome.runtime.sendMessage({"url":buildURL(docId)});
-  } else {
-    window.location.href = buildURL(docId);
-  }
+  chrome.runtime.sendMessage({"url": docId, "newTab": inNewTab});
 }
 
 // isplay final page 
 function show_intro() {
-	//window.open(chrome.extension.getURL('welcome_page.htm'));
-	chrome.runtime.sendMessage({"url":chrome.extension.getURL('welcome_page.htm')});
+	navigate(chrome.extension.getURL('welcome_page.htm'), true);
 }
 
 // isplay final page 
 function show_final_page() {
-	window.open(chrome.extension.getURL('final_page.htm'));
+	navigate(chrome.extension.getURL('final_page.htm'), true);
 }
 
 // given a text, adds the text in a div with 
@@ -280,7 +275,7 @@ function submitAnswerAndGetNext(userResponse, seen) {
                         'info': d['next_info'],
                         'sequence_id': e['sequence_id'] + 1
                       }, function() {
-                        navigate(d['next_doc_id'], false);
+                        navigate(buildURL(d['next_doc_id']), false);
                       });
                   }
                 },
