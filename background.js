@@ -1,9 +1,9 @@
 var ACTIVATED = false; 
 
 var myTabId = -1;
+var first_loaded = true
 
-
-chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+function navigate(request, sender, callback) {
 	//alert(request.url);
 	if (myTabId == -1) {
 		if (request.newTab) {
@@ -11,6 +11,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 			chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 				if (tabId == myTabId) {
 					myTabId = -1;
+					first_loaded = true
 					//alert("closed!");
 					chrome.tabs.sendMessage(tab.id, {"activated": false});
 				}
@@ -19,7 +20,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 	} else {
 		chrome.tabs.update(myTabId, {url: request.url});
 	}
-});
+}
+
+chrome.runtime.onMessage.addListener(navigate);
 
 chrome.browserAction.onClicked.addListener(function(tab) {
 	
@@ -32,6 +35,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 			if (chrome.runtime.lastError) {
 				// tab does not exist
 				myTabId = -1;
+				first_loaded = true
 				chrome.tabs.sendMessage(tab.id, {"activated": false});
 			}
 		});
@@ -47,8 +51,16 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 		// select the recommendation tab
 		chrome.tabs.update(myTabId, {highlighted: true});
 	} else {
-		//alert("about to send to content");
-		chrome.tabs.sendMessage(tab.id, {"activated": true});
+		alert("about to open new tab");
+		navigate({url:"http://www3.nhk.or.jp/news/easy/", "newTab":true});
+		chrome.tabs.onUpdated.addListener(function(myTabId, changeinfo, tab) {
+			if (changeinfo.status == "complete" && first_loaded) {
+				alert("loaded");
+				first_loaded = false;
+				chrome.tabs.sendMessage(tab.id, {"activated": true});
+			}
+		});
+		//chrome.tabs.sendMessage(tab.id, {"activated": true});
 	}
 	
   
