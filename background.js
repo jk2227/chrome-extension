@@ -16,7 +16,9 @@ function navigate(request, sender, callback) {
 				}
 			);
 			chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-				myTabId = -1;
+				chrome.storage.local.set({ "activated_language_learning": false}, function() {
+						myTabId = -1;
+				});
 			});
 	} else {
 		if (myTabId == -1) {
@@ -39,7 +41,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 			if (chrome.runtime.lastError) {
 				// tab does not exist
 				myTabId = -1;
-				chrome.tabs.sendMessage(tab.id, {"activated": false});
+
 			}
 
 			chrome.storage.local.get("doc_id", function(obj) {
@@ -68,26 +70,28 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 		// select the recommendation tab
 		chrome.tabs.update(myTabId, {highlighted: true});
 	} else {
-
 		chrome.storage.local.get(["doc_id", "sequence_id"], function(obj) {
 				myTabId = tab.id;
 				if (obj == null) {
 					navigate({"url": "http://www3.nhk.or.jp/news/easy/", "newTab":true}); 
 				}
 
-				var needsInit = !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+				var needsInit = !('doc_id' in obj) || !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
 
+				if (needsInit) {
+					chrome.storage.local.set({ "activated_language_learning": true}, function() {
+						var url = chrome.extension.getURL('welcome_page.htm');
+						navigate({"url": url, "newTab":true});
+					});
+				}
 				id = obj["doc_id"].substr(0,15); 
 				url = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
 
-				if (needsInit) {
-					url = chrome.extension.getURL('welcome_page.htm');
-				} 
-
 				if (url != tab.url) {
-					navigate({"url": url, "newTab":true});
-				}
-
+					chrome.storage.local.set({ "activated_language_learning": true}, function() {
+						navigate({"url": url, "newTab":true});
+					});
+				} 
 			});
 	}
 	
