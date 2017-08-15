@@ -53,8 +53,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 	} else {
 		alert("about to open new tab");
 		navigate({url:"http://www3.nhk.or.jp/news/easy/", "newTab":true});
-		chrome.tabs.onUpdated.addListener(function(myTabId, changeinfo, tab) {
-			if (changeinfo.status == "complete" && first_loaded) {
+		chrome.tabs.onUpdated.addListener(function(tabId, changeinfo, tab) {
+			if (tabId == myTabId && changeinfo.status == "complete" && first_loaded) {
 				alert("loaded");
 				first_loaded = false;
 				chrome.tabs.sendMessage(tab.id, {"activated": true});
