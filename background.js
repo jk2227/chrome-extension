@@ -62,11 +62,12 @@ function navigate(request, sender, callback) {
 				}
 			);
 	} else {
-		// Note that here if myTabId == -1 the code will do nothing instead of update the current tab.
-		// This is safer: If our extension fails to track myTabId, at least we should not modify the tab that the user is viewing.
-		if (myTabId != -1) {
-			chrome.tabs.update(myTabId, {url: request.url});
+		if (myTabId == -1) {
+			myTabId = null;
 		}
+		chrome.tabs.update(myTabId, {url: request.url}, function(tab) {
+			myTabId = tab.id;
+		});
 	}
 }
 
