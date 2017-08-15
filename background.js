@@ -44,10 +44,19 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 			}
 
-			chrome.storage.local.get("doc_id", function(obj) {
+			chrome.storage.local.get(["doc_id", "sequence_id"], function(obj) {
 				if (obj == null) {
 					return; 
 				}
+				var needsInit = !('doc_id' in obj) || !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+
+				if (needsInit) {
+					chrome.storage.local.set({ "activated_language_learning": true}, function() {
+						var url = chrome.extension.getURL('welcome_page.htm');
+						navigate({"url": url, "newTab":true});
+					});
+				}
+				
 				id = obj["doc_id"].substr(0,15); 
 				url = 'http://www3.nhk.or.jp/news/easy/' + id + '/' + id + '.html'
 
