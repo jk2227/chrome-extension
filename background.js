@@ -5,21 +5,32 @@ var myTabId = -1;
 var LIMIT = 39; 
 
 function navigate(request, sender, callback) {
-	alert(request.url);
 	if (request.newTab) {
-			chrome.tabs.create({url:request.url, active:true}, function(tab){myTabId = tab.id;});
+			chrome.tabs.create(
+				{
+					url:request.url, 
+					active:true
+				}, 
+				function(tab){
+					myTabId = tab.id;
+				}
+			);
 			chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 				myTabId = -1;
 			});
 	} else {
-		chrome.tabs.update(myTabId, {url: request.url});
+		if (myTabId == -1) {
+			myTabId = null;
+		}
+		chrome.tabs.update(myTabId, {url: request.url}, function(t) {
+			myTabId = t.id;
+		});
 	}
 }
 
 chrome.runtime.onMessage.addListener(navigate);
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-	alert(myTabId);
 	
 	// In case our extension failed to track the event that our tab is closed,
 	// this will check if our recommendation page exists.
