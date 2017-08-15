@@ -22,7 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
                       'jrec': f['jrec'], 
                       'doc_id': f['doc_id'],
                       'text': f['text'],
-                      'info': f['info']
+                      'info': f['info'],
+                      'sequence_id': 0,
+                      'session_id': f['session_id'],
+                      'activated_language_learning': false
                     }, function() {
                       alert("Thank you!");
                       window.close();

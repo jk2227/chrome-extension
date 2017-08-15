@@ -155,7 +155,7 @@ function show_intro() {
 
 // isplay final page 
 function show_final_page() {
-	navigate(chrome.extension.getURL('final_page.htm'), true);
+	navigate(chrome.extension.getURL('final_page.htm'), false);
 }
 
 // given a text, adds the text in a div with 
