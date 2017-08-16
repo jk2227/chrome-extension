@@ -9,7 +9,7 @@ var LIMIT = 39;
 
 
 // TODO: shuhan I believe you said you will delete this part?
-chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+/* chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   chrome.storage.local.set({ "activated_language_learning": request.activated}, 
     function(){
       chrome.storage.local.get(['sequence_id', 'doc_id'],
@@ -24,14 +24,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
         }
       });
   });
-});
+}); */
 //
 
 chrome.storage.local.get(["activated_language_learning", "doc_id"], function(r) {
-  if (! "activated_language_learning" in r || 
-    !r["activated_language_learning"]) {
-
-  } else {
+  //if (! "activated_language_learning" in r || 
+  //  !r["activated_language_learning"]) {
+  //} else {
+  if ("activated_language_learning" in r && r["activated_language_learning"]) {
     $(document).ready(function() {
       if (hasStarted()) {
         if (justStarted()) {
@@ -125,7 +125,7 @@ function highlightText() {
 // checks whether URL contains http://www3.nhk.or.jp/
 function needsInit() {
   chrome.storage.local.get('sequence_id', function(obj) {
-    return !'sequence_id' in obj || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+    return !'sequence_id' in obj || obj['sequence_id'] == 0 || obj['sequence_id'] > LIMIT;
   });
 }
 
