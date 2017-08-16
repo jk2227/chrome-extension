@@ -7,7 +7,9 @@ var POPUPONSCREEN = false;
 
 var LIMIT = 39; 
 
-chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+
+// TODO: shuhan I believe you said you will delete this part?
+/* chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   chrome.storage.local.set({ "activated_language_learning": request.activated}, 
     function(){
       chrome.storage.local.get(['sequence_id', 'doc_id'],
@@ -16,25 +18,27 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
         if (request.activated && needsInit) {
           show_intro();
         } else if (request.activated) {
-          navigate(obj['doc_id'], buildURL(obj["doc_id"]) != window.location.href)
+          navigate(buildURL(obj['doc_id']), buildURL(obj["doc_id"]) != window.location.href)
         } else {
           window.location.href = window.location.href;
         }
       });
   });
-});
+}); */
+//
 
 chrome.storage.local.get(["activated_language_learning", "doc_id"], function(r) {
-  if (! "activated_language_learning" in r || 
-    !r["activated_language_learning"]) {
-
-  } else {
+  //if (! "activated_language_learning" in r || 
+  //  !r["activated_language_learning"]) {
+  //} else {
+  if ("activated_language_learning" in r && r["activated_language_learning"]) {
     $(document).ready(function() {
       if (hasStarted()) {
         if (justStarted()) {
           initialize();
         } else if (buildURL(r["doc_id"]) != window.location.href) {
-          navigate(r["doc_id"], false);
+          // allow users to navigate other NHK easy articles
+          // navigate(buildURL(r["doc_id"]), false);
         } else {
           highlightText();
         }
@@ -80,7 +84,7 @@ function initialize() {
                 } 
                 chrome.storage.local.set(valuesToSet, function() {
                   chrome.storage.local.get(['doc_id'], function(d) {
-                    navigate(d['doc_id'], false)
+                    navigate(buildURL(d['doc_id']), false)
                   })
                 });
               },
@@ -121,7 +125,7 @@ function highlightText() {
 // checks whether URL contains http://www3.nhk.or.jp/
 function needsInit() {
   chrome.storage.local.get('sequence_id', function(obj) {
-    return !'sequence_id' in obj || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+    return !'sequence_id' in obj || obj['sequence_id'] == 0 || obj['sequence_id'] > LIMIT;
   });
 }
 
@@ -144,21 +148,17 @@ function buildURL(docId) {
 }
 // given a docId, navigates page to article corresponding to it
 function navigate(docId, inNewTab) {
-  if (inNewTab) {
-    window.open(buildURL(docId));
-  } else {
-    window.location.href = buildURL(docId);
-  }
+  chrome.runtime.sendMessage({"url": docId, "newTab": inNewTab});
 }
 
 // isplay final page 
 function show_intro() {
-  window.location.href = chrome.extension.getURL('welcome_page.htm');
+	navigate(chrome.extension.getURL('welcome_page.htm'), true);
 }
 
 // isplay final page 
 function show_final_page() {
-	window.open(chrome.extension.getURL('final_page.htm'));
+	navigate(chrome.extension.getURL('final_page.htm'), false);
 }
 
 // given a text, adds the text in a div with 
@@ -264,10 +264,15 @@ function submitAnswerAndGetNext(userResponse, seen) {
                  success: function (d) {
                   if (d['end']) {
                     chrome.storage.local.set({
-                      'user_summary': d['user_summary'] 
+                      'user_summary': d['user_summary'],
+                      'jrec': d['new_jrec'], 
+                      'doc_id': d['next_doc_id'], 
+                      'text': d['next_text'],
+                      'info': d['next_info'],
+                      'sequence_id': e['sequence_id'] + 1 
                     }, function() {
                       show_final_page();
-                      window.close();
+                      //window.close();     //Do you agree with removing this? I think window.close() should be in final_page.js
                     });
                   } else {
                     chrome.storage.local.set(
@@ -278,7 +283,7 @@ function submitAnswerAndGetNext(userResponse, seen) {
                         'info': d['next_info'],
                         'sequence_id': e['sequence_id'] + 1
                       }, function() {
-                        navigate(d['next_doc_id'], false);
+                        navigate(buildURL(d['next_doc_id']), false);
                       });
                   }
                 },
