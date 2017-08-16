@@ -266,10 +266,13 @@ function submitAnswerAndGetNext(userResponse, seen) {
                     chrome.storage.local.set({
                       'user_summary': d['user_summary'],
                       'jrec': d['new_jrec'], 
+                      'doc_id': d['next_doc_id'], 
+                      'text': d['next_text'],
+                      'info': d['next_info'],
                       'sequence_id': e['sequence_id'] + 1 
                     }, function() {
                       show_final_page();
-                      window.close();
+                      //window.close();     //Do you agree with removing this? I think window.close() should be in final_page.js
                     });
                   } else {
                     chrome.storage.local.set(
