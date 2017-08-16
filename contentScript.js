@@ -7,6 +7,8 @@ var POPUPONSCREEN = false;
 
 var LIMIT = 39; 
 
+
+// TODO: shuhan I believe you said you will delete this part?
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   chrome.storage.local.set({ "activated_language_learning": request.activated}, 
     function(){
@@ -23,6 +25,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
       });
   });
 });
+//
 
 chrome.storage.local.get(["activated_language_learning", "doc_id"], function(r) {
   if (! "activated_language_learning" in r || 
@@ -261,7 +264,9 @@ function submitAnswerAndGetNext(userResponse, seen) {
                  success: function (d) {
                   if (d['end']) {
                     chrome.storage.local.set({
-                      'user_summary': d['user_summary'] 
+                      'user_summary': d['user_summary'],
+                      'jrec': d['new_jrec'], 
+                      'sequence_id': e['sequence_id'] + 1 
                     }, function() {
                       show_final_page();
                       window.close();

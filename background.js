@@ -101,10 +101,9 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 			// As I see, when obj is null, we should init with welcome page
 			// So I commented out the lines above and added a condition here.
-			var needsInit = obj == null || !('doc_id' in obj) || !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] >= LIMIT;
+			var needsInit = obj == null || !('doc_id' in obj) || !('sequence_id' in obj) || obj['sequence_id'] == 0 || obj['sequence_id'] > LIMIT;
 
 			if (needsInit) {
-				
 				// Start a tab with welcome page
 				chrome.storage.local.set({ "activated_language_learning": true}, function() {
 					var url = chrome.extension.getURL('welcome_page.htm');
