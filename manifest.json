@@ -3,7 +3,7 @@
 
   "name": "Japanese Learning Chrome Extension",
   "description": "A Japanese learning chrome extension that recommends appropriate reading texts for you",
-  "version": "1.139",
+  "version": "1.140",
   "browser_action": {
     "default_icon": "images/icon_16.png"
   },
