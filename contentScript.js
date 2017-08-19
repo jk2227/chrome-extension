@@ -102,13 +102,13 @@ function highlightText() {
 
             document.body.style.background = "black";
             $(".contentWrap").css('background', 'unset');
-            $("#side").append("<div class='overlay'></div>");
+            $("#side").append("<div class='overlayjpext'></div>");
             $("#enq_answer_disp").css('background', 'unset');
             $("#enq_ansbak").css('background', 'unset');
             $("#main_enqdiv").hide();
             $("#targetText").append("<span class='popuptext' id='myPopup'> <i> Do you understand this passage? </i> <br> <button type='button' class='yesButton' id='yesButtonId'> Yes </button> <button type='button' class='noButton' id='noButtonId'> No </button> </span>");
 
-            $('.overlay').fadeIn(300);
+            $('.overlayjpext').fadeIn(300);
             scrollToMyPopUp();
             var seen = new Date().getTime()
                       
