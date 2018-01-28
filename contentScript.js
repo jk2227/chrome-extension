@@ -1,5 +1,5 @@
 // public IP for backend in EC2 
-var EBURL = "http://ec2-52-23-243-230.compute-1.amazonaws.com:5000"
+var EBURL = "http://ec2-54-221-167-99.compute-1.amazonaws.com:5000"
 
 var storage_keys = ['user_id', 'jrec', 'sequence_id', 'session_id', 'doc_id', 'text', 'info']
 
